@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
-  name: { type: String, unique: true },
-  shortName: String,
+  label: { type: String, unique: true },
+  value: String,
 });
 
 mongoose.model('Category', categorySchema);

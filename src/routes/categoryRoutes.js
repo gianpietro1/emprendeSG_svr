@@ -12,7 +12,7 @@ router.get('/categories', async (req, res) => {
 
 router.get('/category/', async (req, res) => {
   const category = await Category.findOne({
-    name: req.query.name,
+    value: req.query.value,
   }).collation({ locale: 'en', strength: 1 });
   res.send(category);
 });
@@ -30,7 +30,7 @@ router.post('/category/', async (req, res) => {
 router.put('/category/', async (req, res) => {
   var update = req.body;
   let category = await Category.findOne({
-    name: { $regex: req.query.name, $options: 'i' },
+    value: { $regex: req.query.value, $options: 'i' },
   });
 
   await category.updateOne(update);
