@@ -1,0 +1,20 @@
+version: '3'
+services:
+  emprendesg_svr:
+    image: 'emprendesg_svr:latest'
+    restart: unless-stopped
+    env_file: .env.svr
+    volumes:
+      - ./public/images:/app/public/images
+  database:
+    image: 'mongo'
+    env_file: .env
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports:
+      - '27017-27019:27017-27019'
+
+networks:
+  default:
+    name: proxynet
