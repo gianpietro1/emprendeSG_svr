@@ -1,5 +1,6 @@
 // Loads the required modules for this application
 require('./models/Business');
+require('./models/Category');
 const os = require('os');
 const http = require('http');
 const cluster = require('cluster');
@@ -10,6 +11,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 const businessRoutes = require('./routes/businessRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 const numCPUs = os.cpus().length;
 // Mongoose connection
@@ -72,6 +74,7 @@ if (cluster.isMaster) {
   );
 
   app.use('/api', businessRoutes);
+  app.use('/api', categoryRoutes);
 
   // Serve static files
   app.use(express.static('public'));
