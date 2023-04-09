@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const artistSchema = new mongoose.Schema({
+const businessSchema = new mongoose.Schema({
   name: { type: String, unique: true },
   description: String,
   logo: String,
@@ -13,4 +13,4 @@ const artistSchema = new mongoose.Schema({
   category: String,
 });
 
-mongoose.model('Artist', artistSchema);
+mongoose.model('Business', businessSchema);
