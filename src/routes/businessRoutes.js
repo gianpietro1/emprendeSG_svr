@@ -59,30 +59,18 @@ router.post('/business/', async (req, res) => {
   }
 });
 
-router.put('/business/', upload.single('image'), async (req, res, next) => {
-  var update = {
-    ...req.body,
-    upcomingEvent: JSON.parse(req.body.upcomingEvent),
-    socialNetworks: JSON.parse(req.body.socialNetworks),
-  };
-  const url = 'https://' + req.get('host');
-  // const url = 'http://' + req.get('host');
+router.put('/business/', async (req, res) => {
+  var update = req.body;
   let business = await Business.findOne({
     name: { $regex: req.query.name, $options: 'i' },
   });
-  if (req.file) {
-    await business.updateOne({
-      ...update,
-      image: url + '/images/' + req.file.filename,
-    });
-  } else {
-    await business.updateOne(update);
-  }
+
+  await business.updateOne(update);
   await business
     .save()
     .then((result) => {
       res.status(201).json({
-        message: 'Business photo updated successfully!',
+        message: 'Business updated successfully!',
       });
     })
     .catch((err) => {
