@@ -9,10 +9,7 @@ const storage = multer.diskStorage({
     cb(null, DIR);
   },
   filename: (req, file, cb) => {
-    const fileName = file.originalname
-      .toLowerCase()
-      .split(' ')
-      .join('-');
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
     cb(null, uuid() + '-' + fileName);
   },
 });
@@ -57,6 +54,23 @@ router.post('/business/', async (req, res) => {
   } catch (e) {
     res.status(200).send(`error creating business_ ${e}`);
   }
+});
+
+router.put('/business/vote/', async (req, res) => {
+  const business = await Business.findOne({
+    name: req.query.name,
+  }).collation({ locale: 'en', strength: 1 });
+  const newVote = req.body.vote;
+  const currentVotes = business.voteCount;
+  const currentSum = business.voteSum;
+  const newVotes = currentVotes + 1;
+  const newSum = currentSum + newVote;
+  const newAvg = newSum / newVotes;
+  business.voteCount = newVotes;
+  business.voteSum = newSum;
+  business.voteAvg = newAvg;
+  business.save();
+  res.status(200).send(`new average: ${newAvg}`);
 });
 
 router.put('/business/', async (req, res) => {
