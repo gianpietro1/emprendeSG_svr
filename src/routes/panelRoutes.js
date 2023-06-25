@@ -46,21 +46,7 @@ router.get('/panelitem/', async (req, res) => {
 });
 
 router.post('/panelitem/', upload.single('image'), async (req, res) => {
-  try {
-    const panelitem = await PanelItem.create({ ...req.body });
-    await panelitem.save();
-    res.send(panelitem);
-  } catch (e) {
-    res.status(200).send(`error creating panelitem_ ${e}`);
-  }
-});
-
-router.put('/panelitem/', async (req, res) => {
-  var update = req.body;
-  let panelitem = await PanelItem.findOne({
-    value: { $regex: req.query.value, $options: 'i' },
-  });
-
+  const panelitem = await PanelItem.create({ ...req.body });
   if (req.file) {
     await panelitem.updateOne({
       ...update,
@@ -69,7 +55,16 @@ router.put('/panelitem/', async (req, res) => {
   } else {
     await panelitem.updateOne(update);
   }
+  res.send(panelitem);
+});
 
+router.put('/panelitem/', async (req, res) => {
+  var update = req.body;
+  let panelitem = await PanelItem.findOne({
+    value: { $regex: req.query.value, $options: 'i' },
+  });
+
+  await panelitem.updateOne(update);
   await panelitem
     .save()
     .then((result) => {
