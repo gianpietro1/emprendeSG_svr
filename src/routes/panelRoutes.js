@@ -1,7 +1,35 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
 const PanelItem = mongoose.model('PanelItem');
+const multer = require('multer');
+const { uuid } = require('uuidv4');
+const DIR = './public/images/';
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, DIR);
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuid() + '-' + fileName);
+  },
+});
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == 'image/png' ||
+      file.mimetype == 'image/jpg' ||
+      file.mimetype == 'image/jpeg'
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  },
+});
 
 const router = express.Router();
 
@@ -17,7 +45,7 @@ router.get('/panelitem/', async (req, res) => {
   res.send(panelitem);
 });
 
-router.post('/panelitem/', async (req, res) => {
+router.post('/panelitem/', upload.single('image'), async (req, res) => {
   try {
     const panelitem = await PanelItem.create({ ...req.body });
     await panelitem.save();
@@ -33,7 +61,15 @@ router.put('/panelitem/', async (req, res) => {
     value: { $regex: req.query.value, $options: 'i' },
   });
 
-  await panelitem.updateOne(update);
+  if (req.file) {
+    await panelitem.updateOne({
+      ...update,
+      image: 'https://sg.radioperu.pe/images/' + req.file.filename,
+    });
+  } else {
+    await panelitem.updateOne(update);
+  }
+
   await panelitem
     .save()
     .then((result) => {
