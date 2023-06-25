@@ -46,16 +46,18 @@ router.get('/panelitem/', async (req, res) => {
 });
 
 router.post('/panelitem/', upload.single('image'), async (req, res) => {
-  const panelitem = await PanelItem.create({ ...req.body });
   if (req.file) {
-    await panelitem.updateOne({
-      ...update,
+    let panelitem = await PanelItem.create({
+      ...req.body,
       image: 'https://sg.radioperu.pe/images/' + req.file.filename,
     });
+    await panelitem.save();
+    res.send(panelitem);
   } else {
-    await panelitem.updateOne(update);
+    let panelitem = await PanelItem.updateOne({ ...req.body });
+    await panelitem.save();
+    res.send(panelitem);
   }
-  res.send(panelitem);
 });
 
 router.put('/panelitem/', async (req, res) => {
