@@ -46,7 +46,6 @@ router.get('/panelitem/', async (req, res) => {
 });
 
 router.post('/panelitem/', upload.single('image'), async (req, res, next) => {
-  console.log(req);
   if (req.file) {
     const panelitem = await PanelItem.create({
       ...req.body,
