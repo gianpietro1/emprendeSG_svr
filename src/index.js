@@ -1,6 +1,7 @@
 // Loads the required modules for this application
 require('./models/Business');
 require('./models/Category');
+require('./models/PanelItem');
 const os = require('os');
 const http = require('http');
 const cluster = require('cluster');
@@ -12,6 +13,7 @@ const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 const businessRoutes = require('./routes/businessRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const panelRoutes = require('./routes/panelRoutes');
 
 const numCPUs = os.cpus().length;
 // Mongoose connection
@@ -40,8 +42,8 @@ mongoose.connection.on('error', (err) => {
 });
 
 // If the Node process ends, close the Mongoose connection
-process.on('SIGINT', function() {
-  mongoose.connection.close(function() {
+process.on('SIGINT', function () {
+  mongoose.connection.close(function () {
     console.log(
       'Mongoose default connection disconnected through app termination',
     );
@@ -75,6 +77,7 @@ if (cluster.isMaster) {
 
   app.use('/api', businessRoutes);
   app.use('/api', categoryRoutes);
+  app.use('/api', panelRoutes);
 
   // Serve static files
   app.use(express.static('public'));
@@ -82,7 +85,7 @@ if (cluster.isMaster) {
   // Server
   http
     .createServer(app)
-    .listen(process.env.PORT || 3002, '0.0.0.0', function() {
+    .listen(process.env.PORT || 3002, '0.0.0.0', function () {
       console.log(
         'Express server listening on port 3002 as Worker ' +
           cluster.worker.id +
