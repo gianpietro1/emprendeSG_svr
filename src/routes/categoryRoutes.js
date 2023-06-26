@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const auth = require('../middleware/auth');
 
 const Category = mongoose.model('Category');
 
@@ -17,7 +18,7 @@ router.get('/category/', async (req, res) => {
   res.send(category);
 });
 
-router.post('/category/', async (req, res) => {
+router.post('/category/', auth, async (req, res) => {
   try {
     const category = await Category.create({ ...req.body });
     await category.save();
@@ -27,7 +28,7 @@ router.post('/category/', async (req, res) => {
   }
 });
 
-router.put('/category/', async (req, res) => {
+router.put('/category/', auth, async (req, res) => {
   var update = req.body;
   let category = await Category.findOne({
     value: { $regex: req.query.value, $options: 'i' },

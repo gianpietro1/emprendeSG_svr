@@ -2,6 +2,7 @@
 require('./models/Business');
 require('./models/Category');
 require('./models/PanelItem');
+require('./models/User');
 const os = require('os');
 const http = require('http');
 const cluster = require('cluster');
@@ -11,6 +12,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const keys = require('./config/keys');
+const userRoutes = require('./routes/userRoutes');
 const businessRoutes = require('./routes/businessRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const panelRoutes = require('./routes/panelRoutes');
@@ -75,6 +77,7 @@ if (cluster.isMaster) {
     }),
   );
 
+  app.use('/api', userRoutes);
   app.use('/api', businessRoutes);
   app.use('/api', categoryRoutes);
   app.use('/api', panelRoutes);

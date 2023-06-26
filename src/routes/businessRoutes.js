@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const auth = require('../middleware/auth');
 
 const Business = mongoose.model('Business');
 
@@ -17,7 +18,7 @@ router.get('/business/', async (req, res) => {
   res.send(business);
 });
 
-router.post('/business/', async (req, res) => {
+router.post('/business/', auth, async (req, res) => {
   try {
     const business = await Business.create({ ...req.body });
     await business.save();
@@ -44,7 +45,7 @@ router.put('/business/vote/', async (req, res) => {
   res.status(200).send(`new average: ${newAvg}`);
 });
 
-router.put('/business/', async (req, res) => {
+router.put('/business/', auth, async (req, res) => {
   var update = req.body;
   let business = await Business.findOne({
     name: { $regex: req.query.name, $options: 'i' },

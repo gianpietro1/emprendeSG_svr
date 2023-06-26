@@ -4,6 +4,7 @@ const PanelItem = mongoose.model('PanelItem');
 const multer = require('multer');
 const { uuid } = require('uuidv4');
 const DIR = './public/images/';
+const auth = require('../middleware/auth');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -45,26 +46,31 @@ router.get('/panelitem/', async (req, res) => {
   res.send(panelitem);
 });
 
-router.post('/panelitem/', upload.single('image'), async (req, res, next) => {
-  if (req.file) {
-    const panelitem = await PanelItem.create({
-      ...req.body,
-      image: 'https://sg.radioperu.pe/images/' + req.file.filename,
-    });
-    // const panelitem = await PanelItem.create({
-    //   ...req.body,
-    //   image: 'http://localhost:3002/images/' + req.file.filename,
-    // });
-    await panelitem.save();
-    res.send(panelitem);
-  } else {
-    const panelitem = await PanelItem.create({ ...req.body });
-    await panelitem.save();
-    res.send(panelitem);
-  }
-});
+router.post(
+  '/panelitem/',
+  auth,
+  upload.single('image'),
+  async (req, res, next) => {
+    if (req.file) {
+      const panelitem = await PanelItem.create({
+        ...req.body,
+        image: 'https://sg.radioperu.pe/images/' + req.file.filename,
+      });
+      // const panelitem = await PanelItem.create({
+      //   ...req.body,
+      //   image: 'http://localhost:3002/images/' + req.file.filename,
+      // });
+      await panelitem.save();
+      res.send(panelitem);
+    } else {
+      const panelitem = await PanelItem.create({ ...req.body });
+      await panelitem.save();
+      res.send(panelitem);
+    }
+  },
+);
 
-router.put('/panelitem/', async (req, res) => {
+router.put('/panelitem/', auth, async (req, res) => {
   var update = req.body;
   let panelitem = await PanelItem.findOne({
     value: { $regex: req.query.value, $options: 'i' },
