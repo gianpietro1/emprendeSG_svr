@@ -5,6 +5,8 @@ const panelItemSchema = new mongoose.Schema({
   description: String,
   image: String,
   date: Date,
+  owner: String,
+  whatsapp: String,
 });
 
 mongoose.model('PanelItem', panelItemSchema);
