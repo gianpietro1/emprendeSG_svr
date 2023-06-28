@@ -41,9 +41,17 @@ router.get('/panelitems', async (req, res) => {
 
 router.get('/panelitem/', async (req, res) => {
   const panelitem = await PanelItem.findOne({
-    value: req.query.value,
+    _id: req.query.id,
   }).collation({ locale: 'en', strength: 1 });
   res.send(panelitem);
+});
+
+router.delete('/panelitem/', async (req, res) => {
+  const panelitem = await PanelItem.findOne({
+    _id: req.query.id,
+  }).collation({ locale: 'en', strength: 1 });
+  panelitem.delete();
+  res.send(`item ${req.query.id} delete`);
 });
 
 router.post(
