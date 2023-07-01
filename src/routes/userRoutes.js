@@ -70,11 +70,11 @@ router.post('/login', async (req, res) => {
       res.status(400).send('Se requiere ingresar todos los campos');
     }
     // Validate if user exist in our database
-    if (email) {
+    if (email && email.includes('@')) {
       var user = await User.findOne({ email });
     }
 
-    if (username) {
+    if (username && !username.includes('@')) {
       var user = await User.findOne({ username });
     }
 
