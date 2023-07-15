@@ -48,6 +48,14 @@ router.get('/business/', async (req, res) => {
   res.send(business);
 });
 
+router.delete('/business/', async (req, res) => {
+  const business = await Business.findOne({
+    _id: req.query.id,
+  }).collation({ locale: 'en', strength: 1 });
+  business.delete();
+  res.send(`business ${req.query.id} deleted`);
+});
+
 router.post('/business/', auth, upload.any(), async (req, res) => {
   console.log('request', req);
   try {
