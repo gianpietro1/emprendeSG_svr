@@ -4,6 +4,36 @@ const auth = require('../middleware/auth');
 
 const Business = mongoose.model('Business');
 
+const multer = require('multer');
+const { uuid } = require('uuidv4');
+const DIR = './public/images/';
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, DIR);
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuid() + '-' + fileName);
+  },
+});
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == 'image/png' ||
+      file.mimetype == 'image/jpg' ||
+      file.mimetype == 'image/jpeg'
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  },
+});
+
 const router = express.Router();
 
 router.get('/businesses', async (req, res) => {
@@ -18,11 +48,40 @@ router.get('/business/', async (req, res) => {
   res.send(business);
 });
 
-router.post('/business/', auth, async (req, res) => {
+router.post('/business/', auth, upload.any(), async (req, res) => {
+  console.log('request', req);
   try {
-    const business = await Business.create({ ...req.body });
-    await business.save();
-    res.send(business);
+    if (req.files) {
+      // console.log(
+      //   'image is',
+      //   'https://sg.radioperu.pe/images/' +
+      //     req.files.filter((f) => f.fieldname === 'image')[0].filename,
+      // );
+      // console.log(
+      //   'logo is',
+      //   'https://sg.radioperu.pe/images/' +
+      //     req.files.filter((f) => f.fieldname === 'logo')[0].filename,
+      // );
+      const business = await Business.create({
+        ...req.body,
+        image:
+          'https://sg.radioperu.pe/images/' +
+          req.files.filter((f) => f.fieldname === 'image')[0].filename,
+        logo:
+          'https://sg.radioperu.pe/images/' +
+          req.files.filter((f) => f.fieldname === 'logo')[0].filename,
+      });
+      // const panelitem = await PanelItem.create({
+      //   ...req.body,
+      //   image: 'http://localhost:3002/images/' + req.file.filename,
+      // });
+      await business.save();
+      res.send(business);
+    } else {
+      const business = await Business.create({ ...req.body });
+      await business.save();
+      res.send(business);
+    }
   } catch (e) {
     res.status(200).send(`error creating business_ ${e}`);
   }
