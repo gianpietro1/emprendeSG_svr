@@ -64,7 +64,7 @@ router.post('/business/', auth, upload.any(), async (req, res) => {
       // );
       const business = await Business.create({
         ...req.body,
-        image:
+        flyer:
           'https://sg.radioperu.pe/images/' +
           req.files.filter((f) => f.fieldname === 'image')[0].filename,
         logo:
