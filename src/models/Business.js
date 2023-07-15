@@ -14,6 +14,9 @@ const businessSchema = new mongoose.Schema({
   voteCount: { type: Number, default: 0 },
   voteSum: { type: Number, default: 0 },
   voteAvg: { type: Number, default: 0 },
+  ownerName: String,
+  ownerEmail: String,
+  ownerWhatsapp: String,
 });
 
 mongoose.model('Business', businessSchema);
